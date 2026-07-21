@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   faqItems.forEach(item => {
     const question = item.querySelector('.faq-question');
     const answer   = item.querySelector('.faq-answer');
+    const icon     = item.querySelector('.faq-icon');
 
     if (!question || !answer) return;
 
@@ -113,12 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
       faqItems.forEach(i => {
         i.classList.remove('open');
         const a = i.querySelector('.faq-answer');
-        if (a) a.classList.remove('open');
+        const ic = i.querySelector('.faq-icon');
+        if (a) { a.classList.remove('open'); a.style.maxHeight = '0px'; }
+        if (ic) ic.style.transform = '';
       });
 
       if (!isOpen) {
         item.classList.add('open');
         answer.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        if (icon) icon.style.transform = 'rotate(180deg)';
       }
     });
   });
@@ -261,19 +266,67 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Lightbox — expande o print clicado
+    // Swipe por toque (mobile)
+    let touchStartX = 0;
+    let touchEndX = 0;
+    track.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    track.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) < 40) return; // ignora toques/arrastos curtos
+      if (diff > 0) {
+        index = (index + 1) % totalSlides;
+      } else {
+        index = (index - 1 + totalSlides) % totalSlides;
+      }
+      update();
+    }, { passive: true });
+
+    // Lightbox — expande o print clicado, com navegação
     const lightbox = document.getElementById('plataformaLightbox');
     const lightboxImg = document.getElementById('plataformaLightboxImg');
     const lightboxClose = document.getElementById('plataformaLightboxClose');
+    const lightboxPrev = document.getElementById('plataformaLightboxPrev');
+    const lightboxNext = document.getElementById('plataformaLightboxNext');
+    const lightboxCounter = document.getElementById('plataformaLightboxCounter');
 
     if (lightbox && lightboxImg) {
-      track.querySelectorAll('.plataforma-slide img').forEach(img => {
-        img.addEventListener('click', () => {
-          lightboxImg.src = img.src;
-          lightboxImg.alt = img.alt;
-          lightbox.classList.add('open');
-        });
+      const slideImgs = Array.from(track.querySelectorAll('.plataforma-slide img'));
+      let lightboxIndex = 0;
+
+      const openLightbox = (i) => {
+        lightboxIndex = i;
+        showLightboxImage();
+        lightbox.classList.add('open');
+      };
+
+      const showLightboxImage = () => {
+        const img = slideImgs[lightboxIndex];
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        if (lightboxCounter) lightboxCounter.textContent = `${lightboxIndex + 1} / ${slideImgs.length}`;
+        // sincroniza o carrossel de fundo com a imagem exibida
+        index = lightboxIndex;
+        update();
+      };
+
+      slideImgs.forEach((img, i) => {
+        img.addEventListener('click', () => openLightbox(i));
       });
+
+      const goPrev = () => {
+        lightboxIndex = (lightboxIndex - 1 + slideImgs.length) % slideImgs.length;
+        showLightboxImage();
+      };
+      const goNext = () => {
+        lightboxIndex = (lightboxIndex + 1) % slideImgs.length;
+        showLightboxImage();
+      };
+
+      if (lightboxPrev) lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); goPrev(); });
+      if (lightboxNext) lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); goNext(); });
 
       const closeLightbox = () => lightbox.classList.remove('open');
 
@@ -282,8 +335,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === lightbox) closeLightbox();
       });
       document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('open')) return;
         if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') goPrev();
+        if (e.key === 'ArrowRight') goNext();
       });
+
+      // Swipe por toque no lightbox
+      let lbTouchStartX = 0;
+      lightbox.addEventListener('touchstart', (e) => {
+        lbTouchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      lightbox.addEventListener('touchend', (e) => {
+        const diff = lbTouchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) < 40) return;
+        diff > 0 ? goNext() : goPrev();
+      }, { passive: true });
     }
   }
 
