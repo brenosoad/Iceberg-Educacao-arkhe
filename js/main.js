@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (burger && mobileMenu) {
     burger.addEventListener('click', () => {
-      const isOpen = mobileMenu.style.display === 'flex';
-      mobileMenu.style.display = isOpen ? 'none' : 'flex';
+      const isOpen = mobileMenu.classList.contains('open');
+      mobileMenu.classList.toggle('open', !isOpen);
       burger.innerHTML = isOpen
         ? '<i class="fas fa-bars"></i>'
         : '<i class="fas fa-times"></i>';
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fecha ao clicar em um link
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        mobileMenu.style.display = 'none';
+        mobileMenu.classList.remove('open');
         burger.innerHTML = '<i class="fas fa-bars"></i>';
       });
     });
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fecha ao clicar fora
     document.addEventListener('click', (e) => {
       if (!navbar.contains(e.target)) {
-        mobileMenu.style.display = 'none';
+        mobileMenu.classList.remove('open');
         burger.innerHTML = '<i class="fas fa-bars"></i>';
       }
     });
@@ -95,6 +95,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const vagas = getVagas();
   const elVagasOferta = document.getElementById('vagas-oferta');
   if (elVagasOferta) elVagasOferta.textContent = vagas;
+
+  // ─────────────────────────────────────────
+  // CONTADOR ANIMADO — prova social
+  // ─────────────────────────────────────────
+  const countEls = document.querySelectorAll('[data-count]');
+  if (countEls.length && 'IntersectionObserver' in window) {
+    const animateCount = (el) => {
+      const target = parseFloat(el.getAttribute('data-count'));
+      const suffix = el.getAttribute('data-suffix') || '';
+      const isDecimal = !Number.isInteger(target);
+      const duration = 1400;
+      const start = performance.now();
+
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+        const value = target * eased;
+        el.textContent = (isDecimal ? value.toFixed(1) : Math.floor(value)) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    countEls.forEach(el => countObserver.observe(el));
+  }
 
   // ─────────────────────────────────────────
   // FAQ – accordion
