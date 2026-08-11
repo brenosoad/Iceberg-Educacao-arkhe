@@ -1,393 +1,897 @@
-/* ══════════════════════════════════════════════════════
-   ARKHÉ – main.js
-   Creative Codex Studio
-   ══════════════════════════════════════════════════════ */
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARKHÉ – A Origem da Sua Aprovação | Iceberg Educação</title>
+  <meta name="description" content="Domine o sistema de aulas, revisões e técnicas de estudo utilizadas por aprovados no vestibular de Medicina. Neurociência, psicologia de alta performance e estratégia real para ENEM e provas próprias." />
+  <meta name="keywords" content="medicina, aprovação, vestibular medicina, ENEM, Fuvest, Vunesp, estudo, neurociência, ARKHÉ, Iceberg Educação" />
+  <meta name="robots" content="index, follow" />
 
-document.addEventListener('DOMContentLoaded', () => {
+  <!-- Open Graph -->
+  <meta property="og:title" content="ARKHÉ – A Origem da Sua Aprovação" />
+  <meta property="og:url" content="https://icebergeducacao.com.br/" />
+  <meta property="og:description" content="O método utilizado por aprovados em Medicina. Neurociência + Psicologia + Estratégia." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://icebergeducacao.com.br/assets/images/iceberg-hero.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
-  // ─────────────────────────────────────────
-  // AOS — Animate on Scroll
-  // ─────────────────────────────────────────
-  if (typeof AOS !== 'undefined') {
-    AOS.init({
-      duration: 700,
-      easing: 'ease-out-cubic',
-      once: true,
-      offset: 60,
-    });
-  }
+  <!-- WhatsApp / Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ARKHÉ – A Origem da Sua Aprovação" />
+  <meta name="twitter:description" content="O método utilizado por aprovados em Medicina." />
+  <meta name="twitter:image" content="https://icebergeducacao.com.br/assets/images/iceberg-hero.png" />
 
-  // ─────────────────────────────────────────
-  // NAVBAR – scroll effect
-  // ─────────────────────────────────────────
-  const navbar = document.getElementById('navbar');
-  const onScroll = () => {
-    if (window.scrollY > 40) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://icebergeducacao.com.br/assets/images/logo-iceberg.png" />
+  <link rel="apple-touch-icon" href="https://icebergeducacao.com.br/assets/images/logo-iceberg2.png" />
 
-  // ─────────────────────────────────────────
-  // NAVBAR – mobile burger menu
-  // ─────────────────────────────────────────
-  const burger  = document.getElementById('navBurger');
-  const mobileMenu = document.getElementById('navMobile');
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-  if (burger && mobileMenu) {
-    burger.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.contains('open');
-      mobileMenu.classList.toggle('open', !isOpen);
-      burger.innerHTML = isOpen
-        ? '<i class="fas fa-bars"></i>'
-        : '<i class="fas fa-times"></i>';
-    });
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    // Fecha ao clicar em um link
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
-        burger.innerHTML = '<i class="fas fa-bars"></i>';
-      });
-    });
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
 
-    // Fecha ao clicar fora
-    document.addEventListener('click', (e) => {
-      if (!navbar.contains(e.target)) {
-        mobileMenu.classList.remove('open');
-        burger.innerHTML = '<i class="fas fa-bars"></i>';
-      }
-    });
-  }
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" />  <!-- Canonical (troque pelo domínio final) -->
+  <link rel="canonical" href="https://icebergeducacao.com.br/" />
 
-  // ─────────────────────────────────────────
-  // VAGAS — decrementa lentamente para urgência
-  // ─────────────────────────────────────────
-  const VAGAS_KEY = 'arkhe_vagas';
-  const VAGAS_TS_KEY = 'arkhe_vagas_ts';
-  const VAGAS_INICIAL = 23;
-  const VAGAS_MINIMO  = 7;
-  const DECREMENTO_INTERVALO_MS = 4 * 60 * 60 * 1000;
-
-  function getVagas() {
-    if (!localStorage.getItem(VAGAS_TS_KEY)) {
-      localStorage.setItem(VAGAS_TS_KEY, Date.now());
-      localStorage.setItem(VAGAS_KEY, VAGAS_INICIAL);
-      return VAGAS_INICIAL;
-    }
-
-    let vagas = parseInt(localStorage.getItem(VAGAS_KEY) || VAGAS_INICIAL, 10);
-    let lastTs = parseInt(localStorage.getItem(VAGAS_TS_KEY), 10);
-    const elapsed = Date.now() - lastTs;
-    const decrementos = Math.floor(elapsed / DECREMENTO_INTERVALO_MS);
-
-    if (decrementos > 0) {
-      vagas = Math.max(VAGAS_MINIMO, vagas - decrementos);
-      localStorage.setItem(VAGAS_KEY, vagas);
-      localStorage.setItem(VAGAS_TS_KEY, Date.now());
-    }
-    return vagas;
-  }
-
-  const vagas = getVagas();
-  const elVagasOferta = document.getElementById('vagas-oferta');
-  if (elVagasOferta) elVagasOferta.textContent = vagas;
-
-  // ─────────────────────────────────────────
-  // CONTADOR ANIMADO — prova social
-  // ─────────────────────────────────────────
-  const countEls = document.querySelectorAll('[data-count]');
-  if (countEls.length && 'IntersectionObserver' in window) {
-    const animateCount = (el) => {
-      const target = parseFloat(el.getAttribute('data-count'));
-      const suffix = el.getAttribute('data-suffix') || '';
-      const isDecimal = !Number.isInteger(target);
-      const duration = 1400;
-      const start = performance.now();
-
-      el.textContent = (isDecimal ? '0.0' : '0') + suffix;
-
-      const step = (now) => {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out
-        const value = target * eased;
-        el.textContent = (isDecimal ? value.toFixed(1) : Math.floor(value)) + suffix;
-        if (progress < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    };
-
-    const countObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCount(entry.target);
-          countObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    countEls.forEach(el => countObserver.observe(el));
-  }
-
-  // ─────────────────────────────────────────
-  // FAQ – accordion
-  // ─────────────────────────────────────────
-  const faqItems = document.querySelectorAll('.faq-item');
-
-  faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    const answer   = item.querySelector('.faq-answer');
-    const icon     = item.querySelector('.faq-icon');
-
-    if (!question || !answer) return;
-
-    question.addEventListener('click', () => {
-      const isOpen = item.classList.contains('open');
-
-      faqItems.forEach(i => {
-        i.classList.remove('open');
-        const a = i.querySelector('.faq-answer');
-        const ic = i.querySelector('.faq-icon');
-        if (a) { a.classList.remove('open'); a.style.maxHeight = '0px'; }
-        if (ic) ic.style.transform = '';
-      });
-
-      if (!isOpen) {
-        item.classList.add('open');
-        answer.classList.add('open');
-        answer.style.maxHeight = answer.scrollHeight + 'px';
-        if (icon) icon.style.transform = 'rotate(180deg)';
-      }
-    });
-  });
-
-  // ─────────────────────────────────────────
-  // SMOOTH SCROLL – internal anchors
-  // ─────────────────────────────────────────
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        const offset = 80; // altura da navbar
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
-    });
-  });
-
-  // ─────────────────────────────────────────
-  // HERO IMAGE – fallback handling
-  // ─────────────────────────────────────────
-  const heroImg = document.querySelector('.hero-img');
-  const heroPlaceholder = document.querySelector('.hero-img-placeholder');
-
-  if (heroImg && heroPlaceholder) {
-    heroImg.addEventListener('load', () => {
-      heroPlaceholder.style.display = 'none';
-      heroImg.style.display = 'block';
-    });
-    heroImg.addEventListener('error', () => {
-      heroImg.style.display = 'none';
-      heroPlaceholder.style.display = 'flex';
-    });
-  }
-
-  // ─────────────────────────────────────────
-  // BUTTON – ripple effect on CTA clicks
-  // ─────────────────────────────────────────
-  document.querySelectorAll('.btn-primary').forEach(btn => {
-    btn.addEventListener('click', function (e) {
-      const ripple = document.createElement('span');
-      ripple.style.cssText = `
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.3);
-        width: 10px; height: 10px;
-        transform: scale(0);
-        animation: ripple 0.6s linear;
-        pointer-events: none;
-      `;
-      const rect = this.getBoundingClientRect();
-      ripple.style.left = (e.clientX - rect.left - 5) + 'px';
-      ripple.style.top  = (e.clientY - rect.top - 5) + 'px';
-
-      if (getComputedStyle(this).position === 'static') {
-        this.style.position = 'relative';
-      }
-      this.style.overflow = 'hidden';
-      this.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 700);
-    });
-  });
-
-  // Injeta keyframe do ripple uma única vez
-  const rippleStyle = document.createElement('style');
-  rippleStyle.textContent = `
-    @keyframes ripple {
-      to { transform: scale(40); opacity: 0; }
-    }
-  `;
-  document.head.appendChild(rippleStyle);
-
-  // ─────────────────────────────────────────
-  // ACTIVE NAV LINK – highlight on scroll
-  // ─────────────────────────────────────────
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-
-  const highlightNav = () => {
-    let current = '';
-    sections.forEach(sec => {
-      if (window.scrollY >= sec.offsetTop - 120) {
-        current = sec.getAttribute('id');
-      }
-    });
-    navLinks.forEach(link => {
-      link.style.color = link.getAttribute('href') === '#' + current
-        ? 'var(--accent)'
-        : '';
-    });
-  };
-  window.addEventListener('scroll', highlightNav, { passive: true });
-
-  // ─────────────────────────────────────────
-  // MOBILE FLOATING CTA
-  // ─────────────────────────────────────────
-  const floatCta = document.getElementById('mobileFloatCta');
-  if (floatCta) {
-    const footer = document.getElementById('footer');
-    const onFloatScroll = () => {
-      const scrolled = window.scrollY > 400;
-      const nearFooter = footer && (window.scrollY + window.innerHeight > footer.offsetTop - 80);
-      floatCta.classList.toggle('visible', scrolled && !nearFooter);
-    };
-    window.addEventListener('scroll', onFloatScroll, { passive: true });
-  }
-
-  // ─────────────────────────────────────────
-  // CARROSSEL – Da Plataforma
-  // ─────────────────────────────────────────
-  const track = document.getElementById('plataformaTrack');
-  if (track) {
-    const prevBtn = document.getElementById('plataformaPrev');
-    const nextBtn = document.getElementById('plataformaNext');
-    const currentEl = document.getElementById('plataformaCurrent');
-    const totalEl = document.getElementById('plataformaTotal');
-    const progressFill = document.getElementById('plataformaProgressFill');
-    const totalSlides = track.children.length;
-    let index = 0;
-
-    if (totalEl) totalEl.textContent = totalSlides;
-
-    const update = () => {
-      track.style.transform = `translateX(-${index * 100}%)`;
-      if (currentEl) currentEl.textContent = index + 1;
-      if (progressFill) progressFill.style.width = `${((index + 1) / totalSlides) * 100}%`;
-    };
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        index = (index - 1 + totalSlides) % totalSlides;
-        update();
-      });
-    }
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        index = (index + 1) % totalSlides;
-        update();
-      });
-    }
-
-    // Swipe por toque (mobile)
-    let touchStartX = 0;
-    let touchEndX = 0;
-    track.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    track.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      if (Math.abs(diff) < 40) return; // ignora toques/arrastos curtos
-      if (diff > 0) {
-        index = (index + 1) % totalSlides;
-      } else {
-        index = (index - 1 + totalSlides) % totalSlides;
-      }
-      update();
-    }, { passive: true });
-
-    // Lightbox — expande o print clicado, com navegação
-    const lightbox = document.getElementById('plataformaLightbox');
-    const lightboxImg = document.getElementById('plataformaLightboxImg');
-    const lightboxClose = document.getElementById('plataformaLightboxClose');
-    const lightboxPrev = document.getElementById('plataformaLightboxPrev');
-    const lightboxNext = document.getElementById('plataformaLightboxNext');
-    const lightboxCounter = document.getElementById('plataformaLightboxCounter');
-
-    if (lightbox && lightboxImg) {
-      const slideImgs = Array.from(track.querySelectorAll('.plataforma-slide img'));
-      let lightboxIndex = 0;
-
-      const openLightbox = (i) => {
-        lightboxIndex = i;
-        showLightboxImage();
-        lightbox.classList.add('open');
-      };
-
-      const showLightboxImage = () => {
-        const img = slideImgs[lightboxIndex];
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt;
-        if (lightboxCounter) lightboxCounter.textContent = `${lightboxIndex + 1} / ${slideImgs.length}`;
-        // sincroniza o carrossel de fundo com a imagem exibida
-        index = lightboxIndex;
-        update();
-      };
-
-      slideImgs.forEach((img, i) => {
-        img.addEventListener('click', () => openLightbox(i));
-      });
-
-      const goPrev = () => {
-        lightboxIndex = (lightboxIndex - 1 + slideImgs.length) % slideImgs.length;
-        showLightboxImage();
-      };
-      const goNext = () => {
-        lightboxIndex = (lightboxIndex + 1) % slideImgs.length;
-        showLightboxImage();
-      };
-
-      if (lightboxPrev) lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); goPrev(); });
-      if (lightboxNext) lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); goNext(); });
-
-      const closeLightbox = () => lightbox.classList.remove('open');
-
-      if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('open')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowLeft') goPrev();
-        if (e.key === 'ArrowRight') goNext();
-      });
-
-      // Swipe por toque no lightbox
-      let lbTouchStartX = 0;
-      lightbox.addEventListener('touchstart', (e) => {
-        lbTouchStartX = e.changedTouches[0].screenX;
-      }, { passive: true });
-      lightbox.addEventListener('touchend', (e) => {
-        const diff = lbTouchStartX - e.changedTouches[0].screenX;
-        if (Math.abs(diff) < 40) return;
-        diff > 0 ? goNext() : goPrev();
-      }, { passive: true });
+  <!-- Dados estruturados (JSON-LD) — troque a URL pelo domínio final -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "ARKHÉ – A Origem da Sua Aprovação",
+    "description": "Sistema de aulas, revisões e técnicas de estudo baseado em neurociência, psicologia de alta performance e estratégia para aprovação em Medicina.",
+    "provider": {
+      "@type": "Organization",
+      "name": "Iceberg Educação",
+      "sameAs": "https://icebergeducacao.com.br/"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "737.00",
+      "priceCurrency": "BRL",
+      "url": "https://icebergeducacao.com.br/#oferta"
     }
   }
+  </script>
+</head>
+<body>
 
-});
+  <!-- ══════════════════════════════════════ -->
+  <!-- NAVBAR -->
+  <!-- ══════════════════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">
+        <img src="assets/images/logo-iceberg2.png" alt="Iceberg Educação" class="nav-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'" />
+        <span class="nav-logo-text" style="display:none">ICEBERG <span>EDUCAÇÃO</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#metodo">Método</a>
+        <a href="#modulos">Módulos</a>
+        <a href="#plataforma">Plataforma</a>
+        <a href="#mentores">Mentores</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://pay.hotmart.com/W104561363R?off=m2tmzzrt&hotfeature=51&_hi=eyJjaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJiaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJzaWQiOiIyNWI2Nzk2NTc5MzY0ZjMzYjEyZDE4MzZlYWM2ODVmNiJ9.1774665343636&bid=1774665344939" class="nav-cta" target="_blank">Comprar Agora</a>
+      </div>
+      <button class="nav-burger" id="navBurger" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <div class="nav-mobile" id="navMobile">
+      <a href="#metodo">Método</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#plataforma">Plataforma</a>
+      <a href="#mentores">Mentores</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://pay.hotmart.com/W104561363R?off=m2tmzzrt&hotfeature=51&_hi=eyJjaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJiaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJzaWQiOiIyNWI2Nzk2NTc5MzY0ZjMzYjEyZDE4MzZlYWM2ODVmNiJ9.1774665343636&bid=1774665344939" class="nav-cta" target="_blank">Comprar Agora</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- HERO -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-container">
+
+      <!-- Left -->
+      <div class="hero-left" data-aos="fade-right" data-aos-duration="900">
+
+        <!-- Logo Iceberg Educação -->
+        <div class="hero-logo-wrapper">
+          <img src="assets/images/logo-iceberg.png" alt="Iceberg Educação" class="hero-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="hero-logo-text-fallback">ICEBERG <span>EDUCAÇÃO</span></div>
+        </div>
+
+        <h1 class="hero-title">
+          ARKHÉ
+          <span class="hero-subtitle-line">A Origem da Sua Aprovação</span>
+        </h1>
+        <p class="hero-desc">
+          Domine o sistema de aulas, revisões e técnicas de estudo utilizadas por <strong>aprovados no vestibular de Medicina</strong> — seja pelo ENEM ou vestibulares. Baseado em neurociência, psicologia de alta performance e estratégia real.
+        </p>
+
+        <div class="hero-btns">
+          <a href="#metodo" class="btn-primary">
+            <i class="fas fa-chevron-down"></i> Conhecer o Método
+          </a>
+          <a href="#oferta" class="btn-secondary">
+            Ver preço e condições
+          </a>
+        </div>
+
+        <div class="hero-seals">
+          <div class="seal"><i class="fas fa-shield-halved"></i> Garantia 7 dias</div>
+          <div class="seal"><i class="fas fa-calendar-check"></i> Acesso de 12 meses</div>
+          <div class="seal"><i class="fas fa-users"></i> Comunidade exclusiva</div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="hero-right" data-aos="fade-left" data-aos-duration="900" data-aos-delay="200">
+        <div class="hero-img-wrapper">
+          <div class="hero-img-glow"></div>
+          <img src="assets/images/iceberg-hero.png" alt="ARKHÉ – A Origem da Sua Aprovação" class="hero-img" />
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+        <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#F5F5F5"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- PROVA SOCIAL -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="prova-social" class="bg-light">
+    <div class="container">
+      <div class="prova-social-bar">
+        <div class="ps-stats">
+          <div class="ps-item">
+            <strong data-count="500" data-suffix="+">500+</strong>
+            <span>estudantes no método</span>
+          </div>
+          <div class="ps-divider"></div>
+          <div class="ps-item">
+            <strong data-count="4.9" data-suffix="★">4.9★</strong>
+            <span>avaliação média</span>
+          </div>
+        </div>
+        <div class="ps-item ps-item-solo">
+          <span><i class="fas fa-rotate"></i> Ecossistema atualizado</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- PROBLEMA -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="problema" class="section bg-light">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Você se identifica?</span>
+        <h2>Por que tantos estudantes <em>não são aprovados</em>?</h2>
+        <p>Não é falta de inteligência. É falta de método.</p>
+      </div>
+      <div class="cards-grid-3">
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="problem-icon"><i class="fas fa-book-open"></i></div>
+          <h3>Estuda muito, retém pouco</h3>
+          <p>Horas e horas de estudo sem metodologia baseada na neurociência fazem com que a memória se dissolva antes da prova.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="problem-icon"><i class="fas fa-brain"></i></div>
+          <h3>Falta de clareza mental</h3>
+          <p>Ansiedade, procrastinação e cansaço cognitivo sabotam o rendimento mesmo dos mais dedicados.</p>
+        </div>
+        <div class="problem-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="problem-icon"><i class="fas fa-map"></i></div>
+          <h3>Sem direção estratégica</h3>
+          <p>A maioria estuda sem orientação. Na ARKHÉ, monitoramos constantemente nossos alunos com consultorias e chat para dúvidas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- MÉTODO ARKHÉ -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="metodo" class="section bg-dark">
+    <div class="container">
+      <div class="section-header light" data-aos="fade-up">
+        <span class="section-tag accent">O Método</span>
+        <h2>Os 3 Pilares da <strong>ARKHÉ</strong></h2>
+        <p>A origem de toda aprovação está em três fundamentos que a maioria ignora.</p>
+      </div>
+      <div class="cards-grid-3">
+        <div class="pillar-card" data-aos="zoom-in" data-aos-delay="0">
+          <div class="pillar-num">01</div>
+          <div class="pillar-icon"><i class="fas fa-dna"></i></div>
+          <h3>Neurociência</h3>
+          <p>Técnicas baseadas em como o cérebro realmente aprende: espaçamento, recuperação ativa e codificação profunda.</p>
+        </div>
+        <div class="pillar-card featured" data-aos="zoom-in" data-aos-delay="150">
+          <div class="pillar-num">02</div>
+          <div class="pillar-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Psicologia de Alta Performance</h3>
+          <p>Controle emocional, foco sustentado e mentalidade de aprovado. O que separa quem passa de quem fica anos no cursinho.</p>
+        </div>
+        <div class="pillar-card" data-aos="zoom-in" data-aos-delay="300">
+          <div class="pillar-num">03</div>
+          <div class="pillar-icon"><i class="fas fa-chess-queen"></i></div>
+          <h3>Estratégia</h3>
+          <p>Planejamento inteligente, análise de métricas e protagonismo real sobre os seus estudos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- COMO FUNCIONA -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="como-funciona" class="section bg-light">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Como Funciona</span>
+        <h2>Tudo que você recebe ao entrar na <strong>ARKHÉ</strong></h2>
+      </div>
+      <div class="cards-grid-2">
+        <div class="feature-card" data-aos="fade-right" data-aos-delay="0">
+          <div class="feature-icon blue"><i class="fas fa-play-circle"></i></div>
+          <div>
+            <h3>Aulas Estratégicas</h3>
+            <p>Conteúdo direto ao ponto, estruturado para gerar máxima retenção com o mínimo de tempo desperdiçado.</p>
+          </div>
+        </div>
+        <div class="feature-card" data-aos="fade-left" data-aos-delay="300">
+          <div class="feature-icon orange"><i class="fas fa-chart-line"></i></div>
+          <div>
+            <h3>Sistema de Monitoramento de Performance</h3>
+            <p>Simulados próprios, revisões, flashcards, cronogramas e muito mais.</p>
+          </div>
+        </div>
+        <div class="feature-card" data-aos="fade-right" data-aos-delay="200">
+          <div class="feature-icon blue"><i class="fas fa-comments"></i></div>
+          <div>
+            <h3>Consultorias ao Vivo</h3>
+            <p>Sessões periódicas de reuniões coletivas e orientação personalizada via chat exclusivo com os mentores.</p>
+          </div>
+        </div>
+        <div class="feature-card" data-aos="fade-left" data-aos-delay="300">
+          <div class="feature-icon orange"><i class="fas fa-users-rectangle"></i></div>
+          <div>
+            <h3>Comunidade Exclusiva</h3>
+            <p>Troca de experiências, ambiente de academia e esportes, disciplina e ajuda mútua com outros estudantes de alta performance.</p>
+          </div>
+        </div>
+        <div class="feature-card" data-aos="fade-left" data-aos-delay="100">
+          <div class="feature-icon blue"><i class="fas fa-rotate"></i></div>
+          <div>
+            <h3>Atualizações Contínuas</h3>
+            <p>O método evolui com você. Novos conteúdos e atualizações incluídos sem custo adicional.</p>
+          </div>
+        </div>
+        <div class="feature-card" data-aos="fade-right" data-aos-delay="200">
+          <div class="feature-icon orange"><i class="fas fa-calendar-days"></i></div>
+          <div>
+            <h3>Cronograma Personalizado</h3>
+            <p>Plano de estudos ajustado à sua rotina, ritmo de aprendizado e provas que você vai enfrentar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- MÓDULOS E BENEFÍCIOS -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="modulos" class="section bg-white">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Conteúdo</span>
+        <h2>Módulos e Benefícios</h2>
+        <p>Uma jornada completa do zero à aprovação.</p>
+      </div>
+
+      <div class="modulos-wrapper">
+        <div class="modulos-list">
+          <div class="modulo-item" data-aos="fade-right" data-aos-delay="0">
+            <span class="modulo-num">M1</span>
+            <div>
+              <h4>Engenharia da Rotina</h4>
+              <p>Ferramentas de organização, comparativo cursinho online x presencial e arquitetura da rotina com ciclo circadiano.</p>
+            </div>
+          </div>
+          <div class="modulo-item" data-aos="fade-right" data-aos-delay="80">
+            <span class="modulo-num">M2</span>
+            <div>
+              <h4>Metodologia de Estudo</h4>
+              <p>Estudo ativo e esforço cognitivo, teoria, solidificação com questões, revisão, simulados, técnicas de estudo e como montar um cronograma.</p>
+            </div>
+          </div>
+          <div class="modulo-item" data-aos="fade-right" data-aos-delay="160">
+            <span class="modulo-num">M3</span>
+            <div>
+              <h4>Treino Psicológico</h4>
+              <p>Introdução à psicologia esportiva, controle emocional, exposição às emoções e técnicas de preparo psicológico (Mindfulness, Aclimatação e Visualização Guiada).</p>
+            </div>
+          </div>
+          <div class="modulo-item" data-aos="fade-right" data-aos-delay="240">
+            <span class="modulo-num">M4</span>
+            <div>
+              <h4>Biohacking e Performance</h4>
+              <p>Sono, memória e produtividade, alta performance nutricional, exercício físico e estudos, análise de métricas de desempenho e blindagem do ambiente.</p>
+            </div>
+          </div>
+          <div class="modulo-item" data-aos="fade-right" data-aos-delay="320">
+            <span class="modulo-num">M5</span>
+            <div>
+              <h4>Avisos e Monitorias</h4>
+              <p>Links e recursos exclusivos para alunos, avisos das monitorias e atualizações do ecossistema.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="beneficios-list" data-aos="fade-left" data-aos-delay="100">
+          <h3>Benefícios Incluídos</h3>
+          <div class="beneficio-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Acesso por 12 meses ao conteúdo</span>
+          </div>
+          <div class="beneficio-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Reuniões Coletivas Mensais com os Mentores</span>
+          </div>
+          <div class="beneficio-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Comunidade VIP e ecossistema de alto rendimento</span>
+          </div>
+          <div class="beneficio-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Suporte direto com os mentores</span>
+          </div>
+          <div class="garantia-box">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+              <strong>Garantia de 7 dias</strong>
+              <p>Não ficou satisfeito? Devolvemos 100% do seu investimento, sem perguntas.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- DA PLATAFORMA -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="plataforma" class="section bg-light">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Por dentro da ARKHÉ</span>
+        <h2>Conheça a <strong>Plataforma</strong></h2>
+        <p>Tudo organizado em um só lugar, feito para você focar apenas em estudar.</p>
+      </div>
+
+      <div class="plataforma-carousel" data-aos="fade-up" data-aos-delay="100">
+        <button class="plataforma-arrow prev" id="plataformaPrev" aria-label="Print anterior">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <div class="plataforma-viewport">
+          <div class="plataforma-browserbar">
+            <span class="plataforma-dot red"></span>
+            <span class="plataforma-dot yellow"></span>
+            <span class="plataforma-dot green"></span>
+            <span class="plataforma-browserbar-url"><i class="fas fa-lock"></i> app.arkheeducacao.com.br</span>
+          </div>
+          <div class="plataforma-track" id="plataformaTrack">
+        <div class="plataforma-slide">
+          <img src="assets/images/1.jpeg" alt="Print 1 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/2.jpeg" alt="Print 2 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/3.jpeg" alt="Print 3 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/4.jpeg" alt="Print 4 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/5.jpeg" alt="Print 5 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/6.jpeg" alt="Print 6 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/7.jpeg" alt="Print 7 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/8.jpeg" alt="Print 8 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/9.jpeg" alt="Print 9 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/10.jpeg" alt="Print 10 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/11.jpeg" alt="Print 11 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/12.jpeg" alt="Print 12 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/13.jpeg" alt="Print 13 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/14.jpeg" alt="Print 14 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/15.jpeg" alt="Print 15 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/16.jpeg" alt="Print 16 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/17.jpeg" alt="Print 17 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/18.jpeg" alt="Print 18 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/19.jpeg" alt="Print 19 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        <div class="plataforma-slide">
+          <img loading="lazy" src="assets/images/20.jpeg" alt="Print 20 da plataforma ARKHE" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <div class="plataforma-slide-fallback"><i class="fas fa-image"></i></div>
+        </div>
+        </div>
+        </div>
+
+        <button class="plataforma-arrow next" id="plataformaNext" aria-label="Próximo print">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <div class="plataforma-counter">
+          <span class="plataforma-counter-text"><span id="plataformaCurrent">1</span> / <span id="plataformaTotal">20</span></span>
+          <div class="plataforma-progress">
+            <div class="plataforma-progress-fill" id="plataformaProgressFill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox — expande o print clicado -->
+  <div class="plataforma-lightbox" id="plataformaLightbox">
+    <button class="plataforma-lightbox-close" id="plataformaLightboxClose" aria-label="Fechar">
+      <i class="fas fa-xmark"></i>
+    </button>
+    <button class="plataforma-lightbox-arrow prev" id="plataformaLightboxPrev" aria-label="Print anterior">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <img src="" alt="Print ampliado da plataforma ARKHE" id="plataformaLightboxImg" />
+    <button class="plataforma-lightbox-arrow next" id="plataformaLightboxNext" aria-label="Próximo print">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <div class="plataforma-lightbox-counter" id="plataformaLightboxCounter">1 / 20</div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- MENTORES -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="mentores" class="section bg-dark">
+    <div class="container">
+      <div class="section-header light" data-aos="fade-up">
+        <span class="section-tag accent">Quem vai te guiar</span>
+        <h2>Quem irá te guiar</h2>
+        <p>Aprovados que transformaram sua experiência em método.</p>
+      </div>
+      <div class="mentores-grid">
+        <div class="mentor-card" data-aos="fade-right" data-aos-delay="0">
+          <div class="mentor-avatar">
+            <div class="avatar-photo" id="avatar-natan">
+              <img src="assets/images/natan-coelho.png" alt="Natan Coelho" onerror="this.parentElement.classList.add('fallback')" />
+              <div class="avatar-fallback-icon"><i class="fas fa-user-tie"></i></div>
+            </div>
+          </div>
+          <div class="mentor-info">
+            <h3>Natan Coelho</h3>
+            <span class="mentor-badge">Cofundador · Estratégia de Aprovação</span>
+            <p>Natan constrói a base biológica do estudante de elite através de dois pilares estratégicos:<br>
+              <br>
+ • Engenharia da Rotina: blindagem absoluta do ambiente e análise de métricas implacáveis para eliminar distrações e substituir planilhas genéricas por execução real.<br>
+ <br>
+• Biohacking Aplicado: domínio do ciclo circadiano, do sono, da nutrição e demais processos biológicos, garantindo que o corpo sustente o esforço mental extremo sem quebrar.</p>
+            <div class="mentor-stats">
+              <div><strong>+300</strong><span>alunos mentorados</span></div>
+              <div><strong>6+</strong><span>anos de método</span></div>
+              <div><strong>+40</strong><span>aprovações próprias em Medicina</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="mentor-card" data-aos="fade-left" data-aos-delay="150">
+          <div class="mentor-avatar">
+            <div class="avatar-photo" id="avatar-diogo">
+              <img src="assets/images/diogo-bolzan.png" alt="Diogo Bolzan" onerror="this.parentElement.classList.add('fallback')" />
+              <div class="avatar-fallback-icon"><i class="fas fa-user-tie"></i></div>
+            </div>
+          </div>
+          <div class="mentor-info">
+            <h3>Diogo Bolzan</h3>
+            <span class="mentor-badge">Cofundador · Neurociência Aplicada</span>
+            <p>Diogo Bolzan forja o estudante de elite através de dois pilares implacáveis:<br>
+              <br>
+• Neurociência Aplicada: metodologia de estudo ativo que abandona a passividade e converte a força bruta em uma retenção de memória cirúrgica e previsível.<br>
+<br>
+• Psicologia Esportiva: táticas de nível olímpico (fruto de 10 anos no Taekwondo) para blindar a mente, dominar a pressão dos simulados e operar no extremo da capacidade cognitiva diária.</p>
+            <div class="mentor-stats">
+              <div><strong>+400</strong><span>alunos mentorados</span></div>
+              <div><strong>4+</strong><span>anos de método</span></div>
+              <div><strong>+60</strong><span>aprovações próprias em Medicina</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contato com os mentores -->
+      <div class="mentor-contato" data-aos="fade-up" data-aos-delay="200">
+        <div class="mentor-contato-texto">
+          <p>Tem alguma dúvida antes de entrar?</p>
+          <strong>Fale diretamente com os mentores</strong>
+        </div>
+        <a href="https://wa.me/5516997154385" target="_blank" rel="noopener" class="mentor-contato-btn">
+          <i class="fab fa-whatsapp"></i>
+          <div>
+            <span>(16) 99715-4385</span>
+            <small>Resposta rápida pelo WhatsApp</small>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- DEPOIMENTOS -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="depoimentos" class="section bg-light">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Resultados reais</span>
+        <h2>Quem usou o método, <em>aprovou</em></h2>
+      </div>
+      <div class="cards-grid-3">
+        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p>"Fiz 3 anos de cursinho tradicional e estava travada nos acertos do Enem. Quando apliquei o sistema de revisões da ARKHÉ e parei de estudar do jeito errado, pulei para 164 acertos e passei na Federal."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar-wrap">
+              <img src="assets/images/depoimento-ana.jpg" alt="Ana Carvalho" class="testimonial-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+              <div class="author-avatar">A</div>
+            </div>
+            <div>
+              <strong>Ana Carvalho</strong>
+              <span>Aprovada em Medicina na UFU</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p>"Eu estudava 12h por dia na base do ódio e não saía do lugar. O método do Natan e do Diogo me ensinou a ter eficiência. Passei a estudar 6h com muito mais foco e conquistei minha vaga na primeira tentativa usando o método."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar-wrap">
+              <img src="assets/images/depoimento-rafael.jpg" alt="Rafael Mendes" class="testimonial-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+              <div class="author-avatar">R</div>
+            </div>
+            <div>
+              <strong>Rafael Mendes</strong>
+              <span>Aprovado em Medicina na Unesp</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p>"Meu maior problema era Naturezas e não ter estratégia de prova. A ARKHÉ me deu o mapa exato do que priorizar e como controlar a ansiedade no dia do exame. Foi o divisor de águas."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar-wrap">
+              <img src="assets/images/depoimento-juliana.jpg" alt="Juliana Ferreira" class="testimonial-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+              <div class="author-avatar">J</div>
+            </div>
+            <div>
+              <strong>Juliana Ferreira</strong>
+              <span>Aprovada em Direito na USP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top: 2rem;" data-aos="fade-up" data-aos-delay="100">
+        <p style="color: var(--text-muted, #888); font-size: 0.95rem;"><i class="fas fa-comment-dots" style="color: var(--accent, #F97316); margin-right: 6px;"></i> Esses são apenas alguns dos relatos dos nossos alunos. Há muito mais histórias de aprovação que não cabem aqui.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- OFERTA -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="oferta" class="section bg-dark">
+    <div class="container">
+      <div class="section-header light" data-aos="fade-up">
+        <span class="section-tag accent">Oferta de Lançamento</span>
+        <h2>Tudo que você recebe<br/>ao entrar na <strong>ARKHÉ</strong></h2>
+      </div>
+
+      <div class="oferta-nova-wrapper" data-aos="fade-up" data-aos-delay="100">
+
+        <!-- Coluna esquerda: lista do que inclui -->
+        <div class="oferta-nova-lista">
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>5 Módulos Completos</strong><span>Da Engenharia da Rotina ao Biohacking e Performance</span></div></div>
+           <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Sistema de Monitoramento de Performance</strong><span>Para te acompanhar e colocar o aprendizado em prática</span></div></div>
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Reuniões Coletivas Mensais de Alinhamento</strong><span>Sessões com os mentores para manter você no caminho certo</span></div></div>
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Consultorias Gravadas + Sessões ao Vivo</strong><span>Acesso a todo o histórico e às próximas sessões</span></div></div>
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Comunidade VIP e Ecossistema de Alto Rendimento</strong><span>Grupo fechado com estudantes focados em aprovação</span></div></div>
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Acesso por 12 meses + Atualizações</strong><span>O ecossistema é atualizado mensalmente</span></div></div>
+          <div class="oferta-nova-item"><i class="fas fa-check-circle"></i><div><strong>Garantia Incondicional de 7 dias</strong><span>100% do valor devolvido, sem perguntas</span></div></div>
+
+          <div class="oferta-vagas-bar">
+            <i class="fas fa-users"></i>
+            <span>Vagas limitadas — <strong id="vagas-oferta">23</strong> restantes neste lote</span>
+          </div>
+        </div>
+
+        <!-- Coluna direita: price card em destaque -->
+        <div class="oferta-price-destaque">
+          <div class="opd-inner">
+            <div class="opd-tag">Valor do investimento</div>
+            <div class="opd-old">De <s>R$ 997</s></div>
+            <div class="opd-price-block">
+              <div class="opd-por">Por apenas</div>
+              <div class="opd-valor-full">R$ 737</div>
+              <div class="opd-avista">à vista</div>
+              <div class="opd-divider">ou</div>
+              <div class="opd-parcelas">12x de <strong>R$ 76,22</strong></div>
+              <div class="opd-economia"><i class="fas fa-tag"></i> Você economiza R$ 260 nesta oferta</div>
+            </div>
+            <a href="https://pay.hotmart.com/W104561363R?off=m2tmzzrt&hotfeature=51&_hi=eyJjaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJiaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJzaWQiOiIyNWI2Nzk2NTc5MzY0ZjMzYjEyZDE4MzZlYWM2ODVmNiJ9.1774665343636&bid=1774665344939" class="btn-primary large oferta-btn" target="_blank">
+              <i class="fas fa-graduation-cap"></i> Garantir Minha Vaga Agora
+            </a>
+            <p class="opd-secure"><i class="fas fa-lock"></i> Pagamento 100% seguro via Hotmart</p>
+            <div class="opd-garantia">
+              <i class="fas fa-shield-halved"></i>
+              <div>
+                <strong>Garantia de 7 dias</strong>
+                <span>Não gostou? Devolvemos tudo.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- FAQ -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="faq" class="section bg-white">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Dúvidas</span>
+        <h2>Perguntas Frequentes</h2>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Para quem é a ARKHÉ?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>A ARKHÉ é exclusiva para quem busca a aprovação em Medicina e cursos de alta concorrência (Engenharia, Direito…) nos vestibulares mais concorridos do país (Enem, Fuvest, Vunesp…) e precisa de um método validado de alta performance, fugindo das dicas rasas de internet.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Preciso ter base prévia para começar?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Não. A ARKHÉ foi desenhada para nivelar você, seja começando do absoluto zero ou tentando destravar a sua nota depois de anos no cursinho. Você vai aprender a reorganizar os seus estudos da forma certa.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Quanto tempo por dia preciso dedicar?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>O sistema se adapta à sua rotina. Mais importante que ficar 10 horas sentado é estudar com qualidade. O Diogo e o Natan te orientarão a encaixar o cronograma da ARKHÉ na sua rotina de forma prática e efetiva.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            O acesso realmente é anual?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>O acesso é anual — plano de 12 meses com atualizações mensais incluídas. Demais planos serão analisados futuramente.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Existe garantia?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Risco zero. Você tem 7 dias de garantia incondicional. Entre, teste o método nos seus estudos e, se achar que não valeu a pena, devolvemos 100% do seu dinheiro sem burocracia.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Como funciona a comunidade exclusiva?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Você fará parte de um grupo fechado apenas com estudantes focados em Medicina e vestibulares concorridos. É o ambiente ideal para tirar dúvidas, manter a disciplina e trocar estratégias reais de prova, enquanto também cresce fora do cursinho: academia, corrida, dieta…</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            As consultorias ao vivo são gravadas?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Dentro da plataforma, temos as consultorias gravadas e as sessões ao vivo. Os mentores avisarão quando e quais ficarão disponíveis.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Quais formas de pagamento são aceitas?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Aceitamos Pix, boleto bancário à vista ou parcelamento em até 12x no cartão de crédito. Todo o pagamento é processado pela plataforma Hotmart com total segurança.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Como acesso o conteúdo após a compra?
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Acesso imediato. Assim que o pagamento for confirmado, você receberá no seu e-mail o link para acessar a plataforma da Hotmart e já iniciar a sua preparação na mesma hora.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- CTA FINAL -->
+  <!-- ══════════════════════════════════════ -->
+  <section id="cta-final" class="section bg-dark">
+    <div class="container">
+      <div class="cta-final-wrapper" data-aos="fade-up">
+        <div class="cta-logo-wrapper">
+          <img src="assets/images/logo-iceberg2.png" alt="Iceberg Educação" class="cta-logo-img" onerror="this.style.display='none'" />
+        </div>
+        <div class="cta-deco"><i class="fas fa-mountain-snow"></i></div>
+        <h2>A sua aprovação começa <br/><em>agora</em>, não amanhã.</h2>
+        <p>Cada dia sem método é um dia perdido. Junte-se a centenas de aprovados que decidiram ir além.</p>
+        <a href="https://pay.hotmart.com/W104561363R?off=m2tmzzrt&hotfeature=51&_hi=eyJjaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJiaWQiOiIxNzczMTY1NzA2NTcwMjc0OTY3MjQ5MDQzNzMyNzAiLCJzaWQiOiIyNWI2Nzk2NTc5MzY0ZjMzYjEyZDE4MzZlYWM2ODVmNiJ9.1774665343636&bid=1774665344939" class="btn-primary large" target="_blank">
+          <i class="fas fa-graduation-cap"></i> Quero Minha Aprovação
+        </a>
+        <p class="cta-guarantee"><i class="fas fa-shield-halved"></i> Garantia incondicional de 7 dias</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ══════════════════════════════════════ -->
+  <footer id="footer">
+    <div class="footer-container">
+
+      <!-- Coluna 1: Iceberg -->
+      <div class="footer-col">
+        <div class="footer-logo-wrapper">
+          <img src="assets/images/logo-iceberg2.png" alt="Iceberg Educação" class="footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+          <span class="footer-logo" style="display:none">ICEBERG <strong>EDUCAÇÃO</strong></span>
+        </div>
+        <p>Transformando a forma como estudantes de Medicina alcançam a aprovação.</p>
+        <div class="footer-brand-links">
+          <a href="#metodo">Método</a>
+          <a href="#modulos">Módulos</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+
+      <!-- Coluna 2: Contato com os mentores -->
+      <div class="footer-col footer-col-center">
+        <p class="footer-col-label">Fale com os mentores</p>
+        <a href="https://wa.me/5516997154385" target="_blank" rel="noopener" class="footer-contact-wa">
+          <i class="fab fa-whatsapp"></i>
+          <div>
+            <span>(16) 99715-4385</span>
+            <small>Clique para conversar no WhatsApp</small>
+          </div>
+        </a>
+      </div>
+
+      <!-- Coluna 3: Creative Codex -->
+      <div class="footer-col footer-col-right">
+        <p class="footer-dev-label">Desenvolvido por</p>
+        <a href="https://creativecodexstudio.netlify.app/" target="_blank" rel="noopener" class="footer-dev-logo-wrapper">
+          <img src="assets/images/logo-creative-codex.png" alt="Creative Codex Studio" class="footer-dev-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+          <span class="footer-dev-name" style="display:none">Creative Codex Studio</span>
+        </a>
+        <div class="footer-dev-links">
+          <a href="https://wa.me/5516997837454" target="_blank" rel="noopener" class="footer-social-link whatsapp">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+          <a href="https://instagram.com/creativecodex.studio" target="_blank" rel="noopener" class="footer-social-link instagram">
+            <i class="fab fa-instagram"></i> Instagram
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Iceberg Educação. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante WhatsApp -->
+  <a href="https://wa.me/5516997154385" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Falar no WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- AOS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <!-- Custom JS -->
+  <script src="js/main.js"></script>
+</body>
+</html>
