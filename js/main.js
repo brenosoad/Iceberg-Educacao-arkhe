@@ -108,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const duration = 1400;
       const start = performance.now();
 
+      el.textContent = (isDecimal ? '0.0' : '0') + suffix;
+
       const step = (now) => {
         const progress = Math.min((now - start) / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3); // ease-out
